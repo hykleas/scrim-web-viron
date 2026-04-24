@@ -11,35 +11,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// Tarayıcı cache — sonraki yüklemelerde anlık açılır
+db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
+
 let useLocalStorage = false;
-
-async function initDemoData() {
-    try {
-        const settingsDoc = await db.collection('settings').doc('general').get();
-        if (!settingsDoc.exists) {
-            await db.collection('settings').doc('general').set({
-                orgName: 'Viron Organizasyon',
-                whatsappLink: 'https://chat.whatsapp.com/LINKINIZI_BURAYA_YAZIN',
-                adminPassword: 'viron2024',
-                description: 'Türkiye\'nin en iyi PUBG Mobile scrim organizasyonu'
-            });
-            await db.collection('settings').doc('weeklyBest').set({
-                teamName: '', teamTag: '', teamEarnings: 0, teamWins: 0,
-                playerName: '', playerPubgId: '', playerTeam: '', playerKills: 0, playerEarnings: 0
-            });
-            await db.collection('settings').doc('stats').set({
-                totalTournaments: 0, totalPrizeMoney: 0, totalPlayers: 0, totalTeams: 0
-            });
-        }
-    } catch (e) {
-        console.warn('Firebase bağlantısı yok, localStorage kullanılıyor.');
-        useLocalStorage = true;
-    }
-}
-
-firebase.firestore().collection('settings').doc('general').get()
-    .then(() => { useLocalStorage = false; initDemoData(); })
-    .catch(() => {
-        console.warn('Firebase bağlantısı kurulamadı, localStorage kullanılıyor.');
-        useLocalStorage = true;
-    });
