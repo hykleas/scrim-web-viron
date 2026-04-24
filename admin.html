@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel – Viron Organizasyon</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="container">
+        <a href="index.html" class="nav-brand">
+            <span class="brand-text">VIRON<span class="brand-accent"> ORG</span></span>
+        </a>
+        <div class="nav-links" id="nav-links">
+            <a href="index.html" class="nav-link">Ana Sayfa</a>
+            <a href="leaderboard.html" class="nav-link">Sıralama</a>
+            <a href="admin.html" class="nav-link active admin-link"><i class="fas fa-shield-halved"></i> Admin</a>
+        </div>
+        <button class="nav-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+    </div>
+</nav>
+
+<!-- ════════════════════════════════════
+     LOGIN PAGE
+════════════════════════════════════ -->
+<div class="login-page" id="login-page">
+    <div class="login-card">
+        <div class="login-icon"><i class="fas fa-shield-halved"></i></div>
+        <h2>Admin Girişi</h2>
+        <p>Viron Organizasyon yönetim paneline erişin</p>
+        <div class="error-msg" id="login-error"></div>
+        <form class="login-form" onsubmit="handleLogin(event)">
+            <div class="form-group" style="margin-bottom:16px">
+                <label class="form-label">Şifre</label>
+                <input type="password" id="admin-password" class="form-control" placeholder="Admin şifresi" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fas fa-sign-in-alt"></i> Giriş Yap
+            </button>
+        </form>
+        <p style="margin-top:16px;font-size:0.78rem;color:var(--text-muted);text-align:center">
+            Varsayılan şifre: <code style="color:var(--color-primary)">viron2024</code>
+        </p>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════
+     DASHBOARD
+════════════════════════════════════ -->
+<div class="admin-layout" id="dashboard" style="display:none">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-label">Genel</div>
+            <div class="sidebar-link active" data-section="overview" onclick="showSection('overview')">
+                <i class="fas fa-chart-pie"></i> Genel Bakış
+            </div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Yönetim</div>
+            <div class="sidebar-link" data-section="tournaments" onclick="showSection('tournaments')">
+                <i class="fas fa-trophy"></i> Turnuvalar
+            </div>
+            <div class="sidebar-link" data-section="teams" onclick="showSection('teams')">
+                <i class="fas fa-users"></i> Takımlar
+            </div>
+            <div class="sidebar-link" data-section="players" onclick="showSection('players')">
+                <i class="fas fa-user"></i> Oyuncular
+            </div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Sistem</div>
+            <div class="sidebar-link" data-section="settings" onclick="showSection('settings')">
+                <i class="fas fa-gear"></i> Ayarlar
+            </div>
+            <div class="sidebar-link" onclick="logout()" style="color:var(--color-red);margin-top:8px">
+                <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-content">
+
+        <!-- ── OVERVIEW ── -->
+        <div class="admin-section active" id="section-overview">
+            <div class="admin-section-header">
+                <h2 class="admin-section-title">Genel Bakış</h2>
+                <span style="font-size:0.8rem;color:var(--text-muted)">Viron Organizasyon Yönetim Paneli</span>
+            </div>
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-card-icon icon-orange"><i class="fas fa-trophy"></i></div>
+                    <div class="stat-card-info">
+                        <div class="value" id="d-tournaments">—</div>
+                        <div class="label">Turnuva</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon icon-cyan"><i class="fas fa-users"></i></div>
+                    <div class="stat-card-info">
+                        <div class="value" id="d-teams">—</div>
+                        <div class="label">Takım</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon icon-green"><i class="fas fa-user"></i></div>
+                    <div class="stat-card-info">
+                        <div class="value" id="d-players">—</div>
+                        <div class="label">Oyuncu</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon icon-gold"><i class="fas fa-coins"></i></div>
+                    <div class="stat-card-info">
+                        <div class="value" id="d-prize" style="font-size:1.1rem">—</div>
+                        <div class="label">Toplam Ödül</div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-card" style="text-align:center;padding:40px">
+                <i class="fas fa-arrow-left" style="color:var(--color-primary);margin-right:8px"></i>
+                Sol menüden yönetmek istediğiniz bölümü seçin.
+            </div>
+        </div>
+
+        <!-- ── TOURNAMENTS ── -->
+        <div class="admin-section" id="section-tournaments">
+            <div class="admin-section-header">
+                <h2 class="admin-section-title">Turnuvalar</h2>
+                <button class="btn btn-primary btn-sm" onclick="openAddModal('tournament')">
+                    <i class="fas fa-plus"></i> Yeni Turnuva
+                </button>
+            </div>
+            <div class="form-card" style="padding:0;overflow:auto">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>İsim</th>
+                            <th>Tarih</th>
+                            <th>Ödül</th>
+                            <th>Dolu/Toplam</th>
+                            <th>Kalan</th>
+                            <th>Durum</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tournaments-tbody">
+                        <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted)">Yükleniyor...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ── TEAMS ── -->
+        <div class="admin-section" id="section-teams">
+            <div class="admin-section-header">
+                <h2 class="admin-section-title">Takımlar</h2>
+                <button class="btn btn-primary btn-sm" onclick="openAddModal('team')">
+                    <i class="fas fa-plus"></i> Yeni Takım
+                </button>
+            </div>
+            <div class="form-card" style="padding:0;overflow:auto">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Takım</th>
+                            <th>Oyuncu Sayısı</th>
+                            <th>Galibiyet</th>
+                            <th>Maç</th>
+                            <th>Kazanç</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teams-tbody">
+                        <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted)">Yükleniyor...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ── PLAYERS ── -->
+        <div class="admin-section" id="section-players">
+            <div class="admin-section-header">
+                <h2 class="admin-section-title">Oyuncular</h2>
+                <button class="btn btn-primary btn-sm" onclick="openAddModal('player')">
+                    <i class="fas fa-plus"></i> Yeni Oyuncu
+                </button>
+            </div>
+            <div class="form-card" style="padding:0;overflow:auto">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Oyuncu</th>
+                            <th>Takım</th>
+                            <th>Kill</th>
+                            <th>Ölüm</th>
+                            <th>Maç</th>
+                            <th>Kazanç</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="players-tbody">
+                        <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted)">Yükleniyor...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ── SETTINGS ── -->
+        <div class="admin-section" id="section-settings">
+            <div class="admin-section-header">
+                <h2 class="admin-section-title">Ayarlar</h2>
+            </div>
+
+            <!-- General Settings -->
+            <form class="form-card" onsubmit="saveGeneralSettings(event)">
+                <div class="form-card-title"><i class="fas fa-sliders"></i> Genel Ayarlar</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Organizasyon Adı</label>
+                        <input type="text" id="s-orgname" class="form-control" placeholder="Viron Organizasyon">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ana WhatsApp Grup Linki</label>
+                        <input type="url" id="s-wa" class="form-control" placeholder="https://chat.whatsapp.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Site Açıklaması</label>
+                        <input type="text" id="s-desc" class="form-control" placeholder="PUBG Mobile Scrim Organizasyonu">
+                    </div>
+                </div>
+                <div style="margin-top:16px">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fas fa-save"></i> Kaydet
+                    </button>
+                </div>
+            </form>
+
+            <!-- Weekly Best -->
+            <form class="form-card" onsubmit="saveWeeklySettings(event)">
+                <div class="form-card-title"><i class="fas fa-crown"></i> Haftanın En İyileri</div>
+
+                <div style="margin-bottom:16px;font-size:0.82rem;color:var(--text-muted);border-left:2px solid var(--color-primary);padding-left:10px">
+                    Haftanın en iyi takımı ve oyuncusunu buradan belirleyin. Ana sayfada gösterilecektir.
+                </div>
+
+                <div style="margin-bottom:8px;font-size:0.85rem;font-weight:600;color:var(--color-primary)">
+                    <i class="fas fa-users"></i> En İyi Takım
+                </div>
+                <div class="form-grid form-grid-2" style="margin-bottom:20px">
+                    <div class="form-group">
+                        <label class="form-label">Takım Adı</label>
+                        <input type="text" id="s-team-name" class="form-control" placeholder="örn. Alpha Squad">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Takım Tag</label>
+                        <input type="text" id="s-team-tag" class="form-control" placeholder="örn. ALP">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Toplam Kazanç (TL)</label>
+                        <input type="number" id="s-team-earnings" class="form-control" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Galibiyet Sayısı</label>
+                        <input type="number" id="s-team-wins" class="form-control" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:8px;font-size:0.85rem;font-weight:600;color:var(--color-gold)">
+                    <i class="fas fa-star"></i> En İyi Oyuncu
+                </div>
+                <div class="form-grid form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Oyuncu Adı</label>
+                        <input type="text" id="s-player-name" class="form-control" placeholder="örn. ProSniper">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">PUBG Mobile ID</label>
+                        <input type="text" id="s-player-pubgid" class="form-control" placeholder="örn. #123456">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Takımı</label>
+                        <input type="text" id="s-player-team" class="form-control" placeholder="örn. Alpha Squad">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Kill Sayısı</label>
+                        <input type="number" id="s-player-kills" class="form-control" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Kazanç (TL)</label>
+                        <input type="number" id="s-player-earnings" class="form-control" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div style="margin-top:16px">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fas fa-save"></i> Kaydet
+                    </button>
+                </div>
+            </form>
+
+            <!-- Change Password -->
+            <form class="form-card" onsubmit="changePassword(event)">
+                <div class="form-card-title"><i class="fas fa-key"></i> Şifre Değiştir</div>
+                <div class="form-grid form-grid-3">
+                    <div class="form-group">
+                        <label class="form-label">Mevcut Şifre</label>
+                        <input type="password" id="pw-current" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Yeni Şifre</label>
+                        <input type="password" id="pw-new" class="form-control" minlength="4" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Şifre Tekrar</label>
+                        <input type="password" id="pw-confirm" class="form-control" minlength="4" required>
+                    </div>
+                </div>
+                <div style="margin-top:16px">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fas fa-lock"></i> Şifreyi Değiştir
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </main>
+</div>
+
+<!-- ════════════════════════════════════
+     MODALS
+════════════════════════════════════ -->
+
+<!-- Tournament Modal -->
+<div class="modal-overlay" id="modal-tournament" onclick="if(event.target===this)closeModal('modal-tournament')">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-tournament-title">Yeni Turnuva</h3>
+            <button class="modal-close" onclick="closeModal('modal-tournament')"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="modal-tournament-form" onsubmit="saveTournament(event)">
+            <div class="form-grid form-grid-2">
+                <div class="form-group" style="grid-column:1/-1">
+                    <label class="form-label">Turnuva Adı</label>
+                    <input type="text" id="t-name" class="form-control" placeholder="örn. Viron Haftalık Scrim #1" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tarih</label>
+                    <input type="datetime-local" id="t-date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ödül (TL)</label>
+                    <input type="number" id="t-prize" class="form-control" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Toplam Slot</label>
+                    <input type="number" id="t-slots" class="form-control" placeholder="16" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dolu Slot</label>
+                    <input type="number" id="t-filled" class="form-control" placeholder="0" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Durum</label>
+                    <select id="t-status" class="form-control">
+                        <option value="open">Açık</option>
+                        <option value="full">Dolu</option>
+                        <option value="ongoing">Devam Ediyor</option>
+                        <option value="closed">Kapandı</option>
+                    </select>
+                </div>
+                <div class="form-group" style="grid-column:1/-1">
+                    <label class="form-label">WhatsApp Kayıt Linki (opsiyonel)</label>
+                    <input type="url" id="t-wa" class="form-control" placeholder="https://chat.whatsapp.com/...">
+                </div>
+                <div class="form-group" style="grid-column:1/-1">
+                    <label class="form-label">Açıklama (opsiyonel)</label>
+                    <input type="text" id="t-desc" class="form-control" placeholder="Turnuva hakkında kısa bilgi">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-tournament')">İptal</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Team Modal -->
+<div class="modal-overlay" id="modal-team" onclick="if(event.target===this)closeModal('modal-team')">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-team-title">Yeni Takım</h3>
+            <button class="modal-close" onclick="closeModal('modal-team')"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="modal-team-form" onsubmit="saveTeam(event)">
+            <div class="form-grid form-grid-2">
+                <div class="form-group">
+                    <label class="form-label">Takım Adı</label>
+                    <input type="text" id="team-name" class="form-control" placeholder="örn. Alpha Squad" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Takım Tag</label>
+                    <input type="text" id="team-tag" class="form-control" placeholder="örn. ALP" maxlength="6">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Oyuncu Sayısı</label>
+                    <input type="number" id="team-members" class="form-control" placeholder="4" min="1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Galibiyet</label>
+                    <input type="number" id="team-wins" class="form-control" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Toplam Maç</label>
+                    <input type="number" id="team-matches" class="form-control" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Toplam Kazanç (TL)</label>
+                    <input type="number" id="team-earnings" class="form-control" placeholder="0" min="0">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-team')">İptal</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Player Modal -->
+<div class="modal-overlay" id="modal-player" onclick="if(event.target===this)closeModal('modal-player')">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-player-title">Yeni Oyuncu</h3>
+            <button class="modal-close" onclick="closeModal('modal-player')"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="modal-player-form" onsubmit="savePlayer(event)">
+            <div class="form-grid form-grid-2">
+                <div class="form-group">
+                    <label class="form-label">Oyuncu Adı / Nick</label>
+                    <input type="text" id="p-name" class="form-control" placeholder="örn. ProSniper99" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">PUBG Mobile ID</label>
+                    <input type="text" id="p-pubgid" class="form-control" placeholder="örn. #5123456">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Takım Adı</label>
+                    <input type="text" id="p-team" class="form-control" placeholder="örn. Alpha Squad">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kill Sayısı</label>
+                    <input type="number" id="p-kills" class="form-control" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ölüm Sayısı</label>
+                    <input type="number" id="p-deaths" class="form-control" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Toplam Maç</label>
+                    <input type="number" id="p-matches" class="form-control" placeholder="0" min="0">
+                </div>
+                <div class="form-group" style="grid-column:1/-1">
+                    <label class="form-label">Toplam Kazanç (TL)</label>
+                    <input type="number" id="p-earnings" class="form-control" placeholder="0" min="0">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('modal-player')">İptal</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay" id="modal-delete" onclick="if(event.target===this)closeModal('modal-delete')">
+    <div class="modal" style="max-width:380px;text-align:center">
+        <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,61,113,0.1);border:1px solid rgba(255,61,113,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.4rem;color:var(--color-red)">
+            <i class="fas fa-trash"></i>
+        </div>
+        <h3 class="modal-title" style="margin-bottom:10px">Silme Onayı</h3>
+        <p style="color:var(--text-secondary);font-size:0.88rem;margin-bottom:6px">
+            <strong id="delete-name" style="color:var(--text-primary)"></strong> kaydını silmek istediğinize emin misiniz?
+        </p>
+        <p style="color:var(--text-muted);font-size:0.8rem;margin-bottom:24px">Bu işlem geri alınamaz.</p>
+        <div class="modal-footer" style="justify-content:center">
+            <button class="btn btn-ghost" onclick="closeModal('modal-delete')">İptal</button>
+            <button class="btn btn-danger" id="delete-confirm-btn"><i class="fas fa-trash"></i> Sil</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

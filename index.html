@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viron Organizasyon – PUBG Mobile Scrim</title>
+    <meta name="description" content="Türkiye'nin önde gelen PUBG Mobile scrim organizasyonu. Turnuvalar, sıralamalar ve daha fazlası.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="container">
+        <a href="index.html" class="nav-brand">
+            <span class="brand-text">VIRON<span class="brand-accent"> ORG</span></span>
+        </a>
+        <div class="nav-links" id="nav-links">
+            <a href="index.html" class="nav-link active">Ana Sayfa</a>
+            <a href="leaderboard.html" class="nav-link">Sıralama</a>
+            <a href="admin.html" class="nav-link admin-link"><i class="fas fa-shield-halved"></i> Admin</a>
+        </div>
+        <button class="nav-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-badge"><i class="fas fa-crosshairs"></i> PUBG MOBILE SCRİM ORGANİZASYONU</div>
+            <h1 class="hero-title">
+                <span class="dim">VIRON</span><br>
+                <span class="accent">ORGANİZASYON</span>
+            </h1>
+            <p class="hero-subtitle">
+                Türkiye'nin rekabetçi PUBG Mobile sahnesinde yerini al. Güçlü takımlarla kıyaslan, turnuvalara katıl ve zirvede ol.
+            </p>
+            <div class="hero-buttons">
+                <a href="#turnuvalar" class="btn btn-primary">
+                    <i class="fas fa-trophy"></i> Turnuvalara Bak
+                </a>
+                <a href="#" class="btn btn-outline wa-main-btn" target="_blank" rel="noopener">
+                    <i class="fab fa-whatsapp"></i> WhatsApp Gruba Katıl
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-value" id="stat-tournaments">0</span>
+                <span class="stat-label">Toplam Turnuva</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="stat-teams">0</span>
+                <span class="stat-label">Kayıtlı Takım</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="stat-players">0</span>
+                <span class="stat-label">Aktif Oyuncu</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="stat-prize" style="font-size:1.4rem">0 TL</span>
+                <span class="stat-label">Toplam Ödül</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- WEEKLY BEST -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">
+                    <span class="icon"><i class="fas fa-crown"></i></span>
+                    Haftanın En İyileri
+                </h2>
+                <div class="section-line"></div>
+            </div>
+        </div>
+        <div class="weekly-grid">
+            <div class="weekly-card" id="weekly-team">
+                <div style="text-align:center;padding:30px;color:var(--text-muted)">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+            <div class="weekly-card" id="weekly-player">
+                <div style="text-align:center;padding:30px;color:var(--text-muted)">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TOURNAMENTS -->
+<section class="section" id="turnuvalar" style="padding-top:0">
+    <div class="container">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">
+                    <span class="icon"><i class="fas fa-trophy"></i></span>
+                    Aktif Turnuvalar
+                </h2>
+                <div class="section-line"></div>
+            </div>
+            <a href="leaderboard.html" class="btn btn-ghost btn-sm">
+                Sıralamaya Git <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        <div class="tournaments-grid" id="tournaments-list">
+            <div style="text-align:center;padding:60px;grid-column:1/-1">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="brand-name">VIRON<span style="color:var(--color-primary)"> ORG</span></div>
+                <p>Türkiye'nin en iyi PUBG Mobile scrim organizasyonu ile rekabetçi sahnede yerini al.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Sayfalar</h4>
+                <a href="index.html">Ana Sayfa</a>
+                <a href="leaderboard.html">Sıralama</a>
+                <a href="admin.html">Admin Panel</a>
+            </div>
+            <div class="footer-links">
+                <h4>Bağlantı</h4>
+                <a href="#" class="wa-main-btn" target="_blank" rel="noopener">
+                    <i class="fab fa-whatsapp"></i> WhatsApp Grubu
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Viron Organizasyon — Tüm hakları saklıdır.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
