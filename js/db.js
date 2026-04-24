@@ -73,8 +73,9 @@ const DB = {
     // ─── Teams ──────────────────────────────────
     async getTeams() {
         if (useLocalStorage) return this.lsGet('teams', []);
-        const snap = await db.collection('teams').orderBy('earnings', 'desc').get();
-        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const snap = await db.collection('teams').get();
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => (Number(b.earnings) || 0) - (Number(a.earnings) || 0));
     },
 
     async addTeam(team) {
@@ -109,8 +110,9 @@ const DB = {
     // ─── Players ────────────────────────────────
     async getPlayers() {
         if (useLocalStorage) return this.lsGet('players', []);
-        const snap = await db.collection('players').orderBy('earnings', 'desc').get();
-        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const snap = await db.collection('players').get();
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => (Number(b.earnings) || 0) - (Number(a.earnings) || 0));
     },
 
     async addPlayer(player) {

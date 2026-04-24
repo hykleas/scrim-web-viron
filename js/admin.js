@@ -258,21 +258,47 @@ async function savePlayer(e) {
 
 // ─── SETTINGS ────────────────────────────────────
 async function loadSettings() {
-    const [settings, weekly] = await Promise.all([DB.getSettings(), DB.getWeeklyBest()]);
+    const [settings, weekly, teams, players] = await Promise.all([
+        DB.getSettings(), DB.getWeeklyBest(), DB.getTeams(), DB.getPlayers()
+    ]);
 
     document.getElementById('s-orgname').value = settings.orgName || '';
     document.getElementById('s-wa').value = settings.whatsappLink || '';
     document.getElementById('s-desc').value = settings.description || '';
 
-    document.getElementById('s-team-name').value = weekly.teamName || '';
-    document.getElementById('s-team-tag').value = weekly.teamTag || '';
+    const teamSel = document.getElementById('s-team-select');
+    teamSel.innerHTML = '<option value="">— Takım Seçin —</option>' +
+        teams.map(t => {
+            const sel = t.name === weekly.teamName ? ' selected' : '';
+            const label = escHtml(t.name) + (t.tag ? ' [' + escHtml(t.tag) + ']' : '');
+            return `<option value="${t.id}" data-name="${escHtml(t.name)}" data-tag="${escHtml(t.tag||'')}" data-earnings="${t.earnings||0}" data-wins="${t.wins||0}"${sel}>${label}</option>`;
+        }).join('');
     document.getElementById('s-team-earnings').value = weekly.teamEarnings || '';
     document.getElementById('s-team-wins').value = weekly.teamWins || '';
-    document.getElementById('s-player-name').value = weekly.playerName || '';
-    document.getElementById('s-player-pubgid').value = weekly.playerPubgId || '';
-    document.getElementById('s-player-team').value = weekly.playerTeam || '';
+
+    const playerSel = document.getElementById('s-player-select');
+    playerSel.innerHTML = '<option value="">— Oyuncu Seçin —</option>' +
+        players.map(p => {
+            const sel = p.name === weekly.playerName ? ' selected' : '';
+            const label = escHtml(p.name) + (p.pubgId ? ' (' + escHtml(p.pubgId) + ')' : '');
+            return `<option value="${p.id}" data-name="${escHtml(p.name)}" data-pubgid="${escHtml(p.pubgId||'')}" data-team="${escHtml(p.team||'')}" data-kills="${p.kills||0}" data-earnings="${p.earnings||0}"${sel}>${label}</option>`;
+        }).join('');
     document.getElementById('s-player-kills').value = weekly.playerKills || '';
     document.getElementById('s-player-earnings').value = weekly.playerEarnings || '';
+}
+
+function onWeeklyTeamChange(select) {
+    const opt = select.selectedOptions[0];
+    if (!opt || !opt.value) return;
+    document.getElementById('s-team-earnings').value = opt.dataset.earnings || 0;
+    document.getElementById('s-team-wins').value = opt.dataset.wins || 0;
+}
+
+function onWeeklyPlayerChange(select) {
+    const opt = select.selectedOptions[0];
+    if (!opt || !opt.value) return;
+    document.getElementById('s-player-kills').value = opt.dataset.kills || 0;
+    document.getElementById('s-player-earnings').value = opt.dataset.earnings || 0;
 }
 
 async function saveGeneralSettings(e) {
@@ -290,14 +316,16 @@ async function saveGeneralSettings(e) {
 async function saveWeeklySettings(e) {
     e.preventDefault();
     try {
+        const teamOpt = document.getElementById('s-team-select').selectedOptions[0];
+        const playerOpt = document.getElementById('s-player-select').selectedOptions[0];
         await DB.saveWeeklyBest({
-            teamName: document.getElementById('s-team-name').value.trim(),
-            teamTag: document.getElementById('s-team-tag').value.trim(),
+            teamName: teamOpt?.dataset.name || '',
+            teamTag: teamOpt?.dataset.tag || '',
             teamEarnings: Number(document.getElementById('s-team-earnings').value) || 0,
             teamWins: Number(document.getElementById('s-team-wins').value) || 0,
-            playerName: document.getElementById('s-player-name').value.trim(),
-            playerPubgId: document.getElementById('s-player-pubgid').value.trim(),
-            playerTeam: document.getElementById('s-player-team').value.trim(),
+            playerName: playerOpt?.dataset.name || '',
+            playerPubgId: playerOpt?.dataset.pubgid || '',
+            playerTeam: playerOpt?.dataset.team || '',
             playerKills: Number(document.getElementById('s-player-kills').value) || 0,
             playerEarnings: Number(document.getElementById('s-player-earnings').value) || 0
         });
@@ -327,13 +355,29 @@ async function changePassword(e) {
 }
 
 // ─── MODALS ──────────────────────────────────────
-function openAddModal(type) {
+async function populateTeamSelect(selectId, selectedTeam) {
+    const sel = document.getElementById(selectId);
+    sel.innerHTML = '<option value="">— Takım Seçin —</option>';
+    try {
+        const teams = await DB.getTeams();
+        teams.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t.name;
+            opt.textContent = t.name + (t.tag ? ' [' + t.tag + ']' : '');
+            if (t.name === selectedTeam) opt.selected = true;
+            sel.appendChild(opt);
+        });
+    } catch(e) {}
+}
+
+async function openAddModal(type) {
     editingId = null;
     editingType = type;
     const modalId = 'modal-' + type;
     document.getElementById(modalId + '-title').textContent =
         { tournament: 'Yeni Turnuva', team: 'Yeni Takım', player: 'Yeni Oyuncu' }[type];
     document.getElementById(modalId + '-form').reset();
+    if (type === 'player') await populateTeamSelect('p-team', '');
     openModal(modalId);
 }
 
@@ -372,7 +416,7 @@ async function openEditModal(type, id) {
         } else {
             document.getElementById('p-name').value = item.name || '';
             document.getElementById('p-pubgid').value = item.pubgId || '';
-            document.getElementById('p-team').value = item.team || '';
+            await populateTeamSelect('p-team', item.team || '');
             document.getElementById('p-kills').value = item.kills || '';
             document.getElementById('p-deaths').value = item.deaths || '';
             document.getElementById('p-matches').value = item.matches || '';
